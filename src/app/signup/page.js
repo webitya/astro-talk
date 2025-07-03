@@ -358,7 +358,7 @@ export default function SignupPage() {
                         ) : (
                           <div className="flex items-center text-red-600">
                             <Cancel className="w-4 h-4 mr-1" />
-                            Passwords don't match
+                            Passwords don t match
                           </div>
                         )}
                       </div>
