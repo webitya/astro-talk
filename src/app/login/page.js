@@ -245,6 +245,7 @@ export default function LoginPage() {
             >
               Create an account
             </Link>
+            <h1>Aditya Kumar</h1>
           </div>
         </div>
 
