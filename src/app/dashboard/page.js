@@ -119,7 +119,7 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
           <div>
             <h1 className="text-3xl font-bold">Welcome back, {user.name}!</h1>
-            <p className="text-muted-foreground mt-2">Here's what's happening with your spiritual journey</p>
+            <p className="text-muted-foreground mt-2">Here s what s happening with your spiritual journey</p>
           </div>
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
             <button className="p-2 rounded-lg bg-muted hover:bg-accent transition-colors">
