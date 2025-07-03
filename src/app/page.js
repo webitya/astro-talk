@@ -120,6 +120,7 @@ export default function Home() {
       <h1>Aditya Kumar</h1>
       <h1>piyush</h1>
       <h1>testing again</h1>
+      <h1>testing 2</h1>
       <Footer />
     </>
   )
