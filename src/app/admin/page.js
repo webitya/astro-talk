@@ -237,7 +237,7 @@ export default function AdminDashboard() {
               <Dashboard className="h-8 w-8 mr-3 text-orange-500" />
               Admin Dashboard
             </h1>
-            <p className="text-gray-600 mt-1">Welcome back, {adminUser.name}! Here's what's happening today.</p>
+            <p className="text-gray-600 mt-1">Welcome back, {adminUser.name}! Here s what s happening today.</p>
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex items-center bg-orange-50 px-3 py-2 rounded-lg">

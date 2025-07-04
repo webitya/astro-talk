@@ -203,7 +203,7 @@ export default function AstrologersPage() {
       </div>
       <h3 className="text-xl font-semibold mb-2">No astrologers found</h3>
       <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-        We couldn't find any astrologers matching your current filters. Try adjusting your search criteria or explore
+        We couldn t find any astrologers matching your current filters. Try adjusting your search criteria or explore
         our full directory.
       </p>
       <button
