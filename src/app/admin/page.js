@@ -379,6 +379,7 @@ export default function AdminDashboard() {
                   <div className="flex items-center">
                     <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
                     <span className="text-sm font-medium text-yellow-600">Limited</span>
+                    <h1>testing....</h1>
                   </div>
                 </div>
               </div>
