@@ -99,3 +99,179 @@ export async function getDashboardData(userId) {
     ],
   }
 }
+
+// Mock user operations
+export async function findUserByEmail(email) {
+  // Mock user data
+  const mockUsers = [
+    {
+      _id: "user1",
+      name: "John Doe",
+      email: "john@example.com",
+      password: "$2a$12$hashedpassword", // This would be a real hashed password
+      role: "user",
+      approved: true,
+      createdAt: new Date(),
+    },
+    {
+      _id: "admin1",
+      name: "Admin User",
+      email: "admin@talkastro.com",
+      password: "$2a$12$hashedpassword",
+      role: "admin",
+      approved: true,
+      createdAt: new Date(),
+    },
+  ]
+
+  return mockUsers.find((user) => user.email === email) || null
+}
+
+export async function createUser(userData) {
+  // Mock user creation
+  const newUser = {
+    _id: `user_${Date.now()}`,
+    ...userData,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+
+  return {
+    insertedId: newUser._id,
+    acknowledged: true,
+  }
+}
+
+export async function findUserById(id) {
+  // Mock find user by ID
+  return {
+    _id: id,
+    name: "Mock User",
+    email: "user@example.com",
+    role: "user",
+    approved: true,
+  }
+}
+
+export async function updateUser(id, updateData) {
+  // Mock user update
+  return {
+    matchedCount: 1,
+    modifiedCount: 1,
+    acknowledged: true,
+  }
+}
+
+// Mock astrologer operations
+export async function getAllAstrologers(filters = {}) {
+  // This will return empty array since we're using mock data in the API route
+  return []
+}
+
+export async function findAstrologerById(id) {
+  return {
+    _id: id,
+    name: "Mock Astrologer",
+    email: "astrologer@example.com",
+    role: "astrologer",
+    approved: true,
+  }
+}
+
+// Mock booking operations
+export async function createBooking(bookingData) {
+  return {
+    insertedId: `booking_${Date.now()}`,
+    acknowledged: true,
+  }
+}
+
+export async function getUserBookings(userId) {
+  return []
+}
+
+export async function getAstrologerBookings(astrologerId) {
+  return []
+}
+
+// Mock wallet operations
+export async function getUserWallet(userId) {
+  return {
+    userId,
+    balance: 1000,
+    transactions: [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+}
+
+export async function updateWalletBalance(userId, amount, type, description) {
+  const wallet = await getUserWallet(userId)
+
+  const transaction = {
+    id: `txn_${Date.now()}`,
+    type,
+    amount: Number.parseFloat(amount),
+    description: description || (type === "credit" ? "Wallet recharge" : "Session payment"),
+    timestamp: new Date(),
+  }
+
+  let newBalance = wallet.balance
+  if (type === "credit") {
+    newBalance += transaction.amount
+  } else if (type === "debit") {
+    if (wallet.balance < transaction.amount) {
+      throw new Error("Insufficient balance")
+    }
+    newBalance -= transaction.amount
+  }
+
+  return {
+    ...wallet,
+    balance: newBalance,
+    transactions: [...wallet.transactions, transaction],
+  }
+}
+
+// Mock chat operations
+export async function getUserChats(userId) {
+  return []
+}
+
+export async function createChat(chatData) {
+  return {
+    insertedId: `chat_${Date.now()}`,
+    acknowledged: true,
+  }
+}
+
+// Mock contact form operations
+export async function createContactSubmission(submissionData) {
+  return {
+    insertedId: `contact_${Date.now()}`,
+    acknowledged: true,
+  }
+}
+
+// Helper functions
+export function createObjectId(id) {
+  return id
+}
+
+export function isValidObjectId(id) {
+  return typeof id === "string" && id.length > 0
+}
+
+// Collections constant
+export const COLLECTIONS = {
+  USERS: "users",
+  ASTROLOGERS: "astrologers",
+  BOOKINGS: "bookings",
+  CHATS: "chats",
+  MESSAGES: "messages",
+  TRANSACTIONS: "transactions",
+  WALLETS: "wallets",
+  REVIEWS: "reviews",
+  CONTACT_SUBMISSIONS: "contact_submissions",
+  ADMIN_LOGS: "admin_logs",
+}
