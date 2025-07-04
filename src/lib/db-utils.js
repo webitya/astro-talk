@@ -1,280 +1,101 @@
-import clientPromise from "./mongodb"
-import { ObjectId } from "mongodb"
-
-// Database name
-const DB_NAME = "talkastro"
-
-// Get database instance
-export async function getDb() {
-  const client = await clientPromise
-  return client.db(DB_NAME)
-}
-
-// Collections
-export const COLLECTIONS = {
-  USERS: "users",
-  ASTROLOGERS: "astrologers",
-  BOOKINGS: "bookings",
-  CHATS: "chats",
-  MESSAGES: "messages",
-  TRANSACTIONS: "transactions",
-  WALLETS: "wallets",
-  REVIEWS: "reviews",
-  CONTACT_SUBMISSIONS: "contact_submissions",
-  ADMIN_LOGS: "admin_logs",
-}
-
-// Helper functions
-export function createObjectId(id) {
-  return new ObjectId(id)
-}
-
-export function isValidObjectId(id) {
-  return ObjectId.isValid(id)
-}
-
-// User operations
-export async function createUser(userData) {
-  const db = await getDb()
-  const result = await db.collection(COLLECTIONS.USERS).insertOne({
-    ...userData,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  })
-  return result
-}
-
-export async function findUserByEmail(email) {
-  const db = await getDb()
-  return await db.collection(COLLECTIONS.USERS).findOne({ email })
-}
-
-export async function findUserById(id) {
-  const db = await getDb()
-  return await db.collection(COLLECTIONS.USERS).findOne({ _id: createObjectId(id) })
-}
-
-export async function updateUser(id, updateData) {
-  const db = await getDb()
-  return await db
-    .collection(COLLECTIONS.USERS)
-    .updateOne({ _id: createObjectId(id) }, { $set: { ...updateData, updatedAt: new Date() } })
-}
-
-// Astrologer operations
-export async function getAllAstrologers(filters = {}) {
-  const db = await getDb()
-  const query = { role: "astrologer", approved: true }
-
-  if (filters.specialty) {
-    query.specialties = { $in: [filters.specialty] }
-  }
-
-  if (filters.minRating) {
-    query.rating = { $gte: Number.parseFloat(filters.minRating) }
-  }
-
-  return await db.collection(COLLECTIONS.USERS).find(query).toArray()
-}
-
-export async function findAstrologerById(id) {
-  const db = await getDb()
-  return await db.collection(COLLECTIONS.USERS).findOne({
-    _id: createObjectId(id),
-    role: "astrologer",
-  })
-}
-
-// Booking operations
-export async function createBooking(bookingData) {
-  const db = await getDb()
-  const result = await db.collection(COLLECTIONS.BOOKINGS).insertOne({
-    ...bookingData,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  })
-  return result
-}
-
-export async function getUserBookings(userId) {
-  const db = await getDb()
-  return await db.collection(COLLECTIONS.BOOKINGS).find({ userId }).sort({ createdAt: -1 }).toArray()
-}
-
-export async function getAstrologerBookings(astrologerId) {
-  const db = await getDb()
-  return await db.collection(COLLECTIONS.BOOKINGS).find({ astrologerId }).sort({ createdAt: -1 }).toArray()
-}
-
-// Wallet operations
-export async function getUserWallet(userId) {
-  const db = await getDb()
-  let wallet = await db.collection(COLLECTIONS.WALLETS).findOne({ userId })
-
-  if (!wallet) {
-    // Create wallet if it doesn't exist
-    wallet = {
-      userId,
-      balance: 0,
-      transactions: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    await db.collection(COLLECTIONS.WALLETS).insertOne(wallet)
-  }
-
-  return wallet
-}
-
-export async function updateWalletBalance(userId, amount, type, description) {
-  const db = await getDb()
-  const wallet = await getUserWallet(userId)
-
-  const transaction = {
-    id: new ObjectId().toString(),
-    type,
-    amount: Number.parseFloat(amount),
-    description: description || (type === "credit" ? "Wallet recharge" : "Session payment"),
-    timestamp: new Date(),
-  }
-
-  let newBalance = wallet.balance
-  if (type === "credit") {
-    newBalance += transaction.amount
-  } else if (type === "debit") {
-    if (wallet.balance < transaction.amount) {
-      throw new Error("Insufficient balance")
-    }
-    newBalance -= transaction.amount
-  }
-
-  await db.collection(COLLECTIONS.WALLETS).updateOne(
-    { userId },
-    {
-      $set: { balance: newBalance, updatedAt: new Date() },
-      $push: { transactions: transaction },
-    },
-  )
-
-  return { ...wallet, balance: newBalance, transactions: [...wallet.transactions, transaction] }
-}
-
-// Chat operations
-export async function getUserChats(userId) {
-  const db = await getDb()
-  return await db.collection(COLLECTIONS.CHATS).find({ userId }).sort({ lastMessageTime: -1 }).toArray()
-}
-
-export async function createChat(chatData) {
-  const db = await getDb()
-  const result = await db.collection(COLLECTIONS.CHATS).insertOne({
-    ...chatData,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  })
-  return result
-}
-
-// Contact form operations
-export async function createContactSubmission(submissionData) {
-  const db = await getDb()
-  const result = await db.collection(COLLECTIONS.CONTACT_SUBMISSIONS).insertOne({
-    ...submissionData,
-    status: "new",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  })
-  return result
-}
-
-// Admin operations
-export async function getAdminStats() {
-  const db = await getDb()
-
-  const [totalUsers, totalAstrologers, totalBookings, totalTransactions] = await Promise.all([
-    db.collection(COLLECTIONS.USERS).countDocuments({ role: "user" }),
-    db.collection(COLLECTIONS.USERS).countDocuments({ role: "astrologer" }),
-    db.collection(COLLECTIONS.BOOKINGS).countDocuments(),
-    db
-      .collection(COLLECTIONS.WALLETS)
-      .aggregate([
-        { $unwind: "$transactions" },
-        { $match: { "transactions.type": "debit" } },
-        { $group: { _id: null, total: { $sum: "$transactions.amount" } } },
-      ])
-      .toArray(),
-  ])
-
-  return {
-    totalUsers,
-    totalAstrologers,
-    totalBookings,
-    totalRevenue: totalTransactions[0]?.total || 0,
-    activeChats: 0, // Will be calculated from real-time data
-    pendingApprovals: await db.collection(COLLECTIONS.USERS).countDocuments({
-      role: "astrologer",
-      approved: false,
-    }),
-  }
-}
+// Mock database utilities for development
+// In production, these would connect to your actual database
 
 export async function getRecentActivity() {
-  const db = await getDb()
-
-  // Get recent user registrations
-  const recentUsers = await db
-    .collection(COLLECTIONS.USERS)
-    .find({ role: "user" })
-    .sort({ createdAt: -1 })
-    .limit(5)
-    .toArray()
-
-  // Get recent astrologer applications
-  const recentAstrologers = await db
-    .collection(COLLECTIONS.USERS)
-    .find({ role: "astrologer" })
-    .sort({ createdAt: -1 })
-    .limit(5)
-    .toArray()
-
-  // Get recent bookings
-  const recentBookings = await db.collection(COLLECTIONS.BOOKINGS).find().sort({ createdAt: -1 }).limit(5).toArray()
-
-  const activities = []
-
-  // Add user activities
-  recentUsers.forEach((user) => {
-    activities.push({
-      id: user._id.toString(),
+  // Mock recent activity data
+  const recentActivity = [
+    {
+      id: "1",
       type: "user_signup",
       title: "New User Registration",
-      description: `${user.name} joined the platform`,
-      timestamp: user.createdAt,
-    })
-  })
-
-  // Add astrologer activities
-  recentAstrologers.forEach((astrologer) => {
-    activities.push({
-      id: astrologer._id.toString(),
+      description: "Priya Sharma joined the platform",
+      timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // 5 minutes ago
+    },
+    {
+      id: "2",
       type: "astrologer_application",
       title: "Astrologer Application",
-      description: `${astrologer.name} applied to become an astrologer`,
-      timestamp: astrologer.createdAt,
-    })
-  })
-
-  // Add booking activities
-  recentBookings.forEach((booking) => {
-    activities.push({
-      id: booking._id.toString(),
+      description: "Dr. Rajesh Kumar applied to become an astrologer",
+      timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // 15 minutes ago
+    },
+    {
+      id: "3",
       type: "booking_created",
       title: "New Booking",
-      description: `Session booked for ${booking.service}`,
-      timestamp: booking.createdAt,
-    })
-  })
+      description: "Session booked with Acharya Sharma",
+      timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
+    },
+    {
+      id: "4",
+      type: "payment_received",
+      title: "Payment Received",
+      description: "₹1200 payment for astrology session",
+      timestamp: new Date(Date.now() - 45 * 60 * 1000).toISOString(), // 45 minutes ago
+    },
+    {
+      id: "5",
+      type: "user_signup",
+      title: "New User Registration",
+      description: "Amit Patel joined the platform",
+      timestamp: new Date(Date.now() - 60 * 60 * 1000).toISOString(), // 1 hour ago
+    },
+  ]
 
-  // Sort by timestamp and return latest 10
-  return activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 10)
+  return recentActivity
+}
+
+export async function getAdminStats() {
+  // Mock admin stats data
+  return {
+    totalUsers: 1250,
+    totalAstrologers: 45,
+    totalBookings: 890,
+    totalRevenue: 125000,
+    activeUsers: 320,
+    pendingBookings: 12,
+    completedSessions: 756,
+    averageRating: 4.6,
+  }
+}
+
+export async function getDashboardData(userId) {
+  // Mock dashboard data
+  return {
+    walletBalance: 2500,
+    totalBookings: 8,
+    activeSessions: 2,
+    totalSpent: 4500,
+    recentBookings: [
+      {
+        id: "1",
+        astrologerName: "Acharya Sharma",
+        date: "2024-01-15",
+        time: "10:00 AM",
+        status: "confirmed",
+        service: "Vedic Astrology",
+      },
+      {
+        id: "2",
+        astrologerName: "Dr. Priya Gupta",
+        date: "2024-01-12",
+        time: "2:30 PM",
+        status: "completed",
+        service: "Tarot Reading",
+      },
+    ],
+    chatHistory: [
+      {
+        id: "1",
+        astrologerName: "Acharya Sharma",
+        lastMessage: "Thank you for the session",
+        timestamp: "2024-01-15T10:30:00Z",
+      },
+      {
+        id: "2",
+        astrologerName: "Dr. Priya Gupta",
+        lastMessage: "Your reading is complete",
+        timestamp: "2024-01-12T15:00:00Z",
+      },
+    ],
+  }
 }
