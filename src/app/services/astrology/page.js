@@ -24,7 +24,7 @@ export default function AstrologyPage() {
       rating: 4.9,
       reviews: 128,
       experience: 15,
-      image: "/astrologers/astrologer-1.jpg",
+      image: "/astrology-chart.png",
       specialties: ["Vedic Astrology", "Birth Chart Analysis"],
     },
     {
@@ -33,7 +33,7 @@ export default function AstrologyPage() {
       rating: 4.8,
       reviews: 215,
       experience: 20,
-      image: "/astrologers/astrologer-3.jpg",
+      image: "/chooseyouastrologer.png",
       specialties: ["Predictive Astrology", "Remedial Measures"],
     },
     {
@@ -42,7 +42,7 @@ export default function AstrologyPage() {
       rating: 4.7,
       reviews: 89,
       experience: 12,
-      image: "/astrologers/astrologer-4.jpg",
+      image: "/getreading.png",
       specialties: ["Western Astrology", "Psychological Astrology"],
     },
   ]
@@ -94,7 +94,7 @@ export default function AstrologyPage() {
                 <div className="relative">
                   <div className="absolute -inset-4 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full blur-3xl opacity-20"></div>
                   <Image
-                    src="/services/astrology-hero.png"
+                    src="/astrology-hero.png"
                     alt="Astrology consultation"
                     width={600}
                     height={500}
@@ -134,7 +134,7 @@ export default function AstrologyPage() {
                   transition={{ duration: 0.5 }}
                 >
                   <Image
-                    src="/services/astrology-chart.png"
+                    src="/astrology-chart.png"
                     alt="Astrological birth chart"
                     width={500}
                     height={400}
@@ -187,13 +187,13 @@ export default function AstrologyPage() {
               {benefits.map((benefit, index) => (
                 <motion.div
                   key={index}
-                  className="bg-white p-6 rounded-xl shadow-sm border border-border"
+                  className="bg-pink-100 p-6 rounded-xl shadow-sm border border-border"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <CheckCircle className="h-8 w-8 text-primary mb-4" />
+                 {/*<CheckCircle className="h-8 w-8 text-primary mb-4" />*/}
                   <p className="font-medium">{benefit}</p>
                 </motion.div>
               ))}
@@ -202,137 +202,149 @@ export default function AstrologyPage() {
         </section>
 
         {/* How It Works */}
-        <section id="how-it-works" className="py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <motion.div
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">How Astrological Consultation Works</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Get personalized insights through our simple and secure consultation process
-              </p>
-            </motion.div>
+<section id="how-it-works" className="py-20 bg-white">
+  <div className="container mx-auto px-4">
+    <motion.div
+      className="text-center mb-16"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+    >
+      <h2 className="text-3xl md:text-4xl font-bold mb-6">How Astrological Consultation Works</h2>
+      <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        Get personalized insights through our simple and secure consultation process
+      </p>
+    </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  step: "1",
-                  title: "Choose Your Astrologer",
-                  description: "Browse our verified astrologers and select one based on their specialties and reviews",
-                  icon: <Star className="h-8 w-8" />,
-                },
-                {
-                  step: "2",
-                  title: "Book Your Session",
-                  description:
-                    "Schedule a convenient time or start an instant chat session with your chosen astrologer",
-                  icon: <Schedule className="h-8 w-8" />,
-                },
-                {
-                  step: "3",
-                  title: "Get Your Reading",
-                  description:
-                    "Receive detailed insights about your birth chart, current transits, and future predictions",
-                  icon: <CheckCircle className="h-8 w-8" />,
-                },
-              ].map((step, index) => (
-                <motion.div
-                  key={index}
-                  className="text-center"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.2 }}
-                >
-                  <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
-                    {step.step}
-                  </div>
-                  <div className="text-primary mb-4">{step.icon}</div>
-                  <h3 className="text-xl font-semibold mb-4">{step.title}</h3>
-                  <p className="text-muted-foreground">{step.description}</p>
-                </motion.div>
-              ))}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {[
+        {
+          step: "1",
+          title: "Choose Your Astrologer",
+          description: "Browse our verified astrologers and select one based on their specialties and reviews",
+          icon: <Star className="h-8 w-8" />,
+          bgImage: "/chooseyouastrologer.png", 
+        },
+        {
+          step: "2",
+          title: "Book Your Session",
+          description: "Schedule a convenient time or start an instant chat session with your chosen astrologer",
+          icon: <Schedule className="h-8 w-8" />,
+          bgImage: "/bookyoursession.png",
+        },
+        {
+          step: "3",
+          title: "Get Your Reading",
+          description: "Receive detailed insights about your birth chart, current transits, and future predictions",
+          icon: <CheckCircle className="h-8 w-8" />,
+          bgImage: "/getreading.png",
+        },
+      ].map((step, index) => (
+        <motion.div
+          key={index}
+          className="relative text-center rounded-xl overflow-hidden shadow-md"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 5, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: index * 0.2 }}
+        >
+          {/* Background image container */}
+          <div
+            className="absolute inset-0 bg-cover bg-center opacity-10"
+            style={{ backgroundImage: `url(${step.bgImage})` }}
+          ></div>
+
+          {/* Content on top of image */}
+          <div className="relative p-6 z-10">
+            <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+              {step.step}
             </div>
+            <div className="text-primary mb-4">{step.icon}</div>
+            <h3 className="text-xl font-semibold mb-4">{step.title}</h3>
+            <p className="text-muted-foreground">{step.description}</p>
           </div>
-        </section>
+        </motion.div>
+      ))}
+    </div>
+  </div>
+</section>
+
 
         {/* Featured Astrologers */}
-        <section className="py-20 bg-muted">
-          <div className="container mx-auto px-4">
-            <motion.div
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Expert Astrologers</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Connect with our verified and experienced astrologers specializing in various astrological traditions
-              </p>
-            </motion.div>
+      {/* Expert Astrologers */}
+<section className="py-20 bg-gradient-to-r from-red-600 to-red-400 text-white">
+  <div className="container mx-auto px-4">
+    <motion.div
+      className="text-center mb-16"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+    >
+      <h2 className="text-3xl md:text-4xl font-bold mb-4">Expert Astrologers</h2>
+      <p className="text-lg max-w-2xl mx-auto text-white/90">
+        Connect with our verified and experienced astrologers specializing in various astrological traditions
+      </p>
+    </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {astrologers.map((astrologer, index) => (
-                <motion.div
-                  key={astrologer.id}
-                  className="bg-white p-6 rounded-xl shadow-sm border border-border"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+      {astrologers.map((astrologer, index) => (
+        <motion.div
+          key={astrologer.id}
+          className="p-6 rounded-2xl shadow-xl border border-white/10 bg-gradient-to-br from-yellow-200 to-orange-300 text-gray-900 hover:scale-105 transition-transform duration-300"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
+        >
+          <div className="text-center">
+            <Image
+              src={astrologer.image || "/placeholder.svg"}
+              alt={astrologer.name}
+              width={80}
+              height={80}
+              className="rounded-full mx-auto mb-4 border-2 border-white"
+            />
+            <h3 className="text-xl font-semibold mb-2">{astrologer.name}</h3>
+            <div className="flex items-center justify-center mb-2 text-yellow-600 font-medium">
+              <Star className="h-5 w-5 mr-1" />
+              {astrologer.rating}{" "}
+              <span className="text-sm text-gray-700 ml-1">({astrologer.reviews} reviews)</span>
+            </div>
+            <p className="text-sm mb-3">{astrologer.experience} years experience</p>
+            <div className="flex flex-wrap justify-center gap-2 mb-4">
+              {astrologer.specialties.map((specialty) => (
+                <span
+                  key={specialty}
+                  className="bg-white text-gray-800 text-xs font-medium px-2 py-1 rounded-full"
                 >
-                  <div className="text-center">
-                    <Image
-                      src={astrologer.image || "/placeholder.svg"}
-                      alt={astrologer.name}
-                      width={80}
-                      height={80}
-                      className="rounded-full mx-auto mb-4"
-                    />
-                    <h3 className="text-xl font-semibold mb-2">{astrologer.name}</h3>
-                    <div className="flex items-center justify-center mb-2">
-                      <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                      <span className="font-medium">{astrologer.rating}</span>
-                      <span className="text-muted-foreground text-sm ml-1">({astrologer.reviews} reviews)</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-4">{astrologer.experience} years experience</p>
-                    <div className="flex flex-wrap gap-2 justify-center mb-6">
-                      {astrologer.specialties.map((specialty) => (
-                        <span
-                          key={specialty}
-                          className="px-2 py-1 bg-muted text-xs font-medium rounded-full text-muted-foreground"
-                        >
-                          {specialty}
-                        </span>
-                      ))}
-                    </div>
-                    <Link
-                      href={`/astrologers/${astrologer.id}`}
-                      className="inline-flex items-center justify-center w-full py-2 px-4 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
-                    >
-                      Consult Now
-                    </Link>
-                  </div>
-                </motion.div>
+                  {specialty}
+                </span>
               ))}
             </div>
-
-            <div className="text-center mt-12">
-              <Link
-                href="/astrologers?specialty=Vedic Astrology"
-                className="inline-flex items-center justify-center px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors font-medium"
-              >
-                View All Astrologers
-                <ArrowForward className="ml-2 h-5 w-5" />
-              </Link>
-            </div>
+            <Link
+              href={`/astrologers/${astrologer.id}`}
+              className="inline-block px-5 py-2 mt-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
+            >
+              Consult Now
+            </Link>
           </div>
-        </section>
+        </motion.div>
+      ))}
+    </div>
+
+    <div className="text-center mt-12">
+      <Link
+        href="/astrologers"
+        className="inline-flex items-center justify-center px-8 py-3 bg-white text-red-600 font-semibold rounded-lg hover:bg-white/90 transition"
+      >
+        View All Astrologers
+        <ArrowForward className="ml-2 h-5 w-5" />
+      </Link>
+    </div>
+  </div>
+</section>
 
         {/* CTA Section */}
         <section className="py-20 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
