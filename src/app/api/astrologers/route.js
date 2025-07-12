@@ -1,168 +1,230 @@
 import { NextResponse } from "next/server"
-import { getAllAstrologers } from "@/lib/db-utils"
 
-// Mock astrologers data
-const mockAstrologers = [
-  {
-    id: "1",
-    name: "Acharya Sharma",
-    email: "sharma@example.com",
-    specialties: ["Vedic Astrology", "Palmistry"],
-    experience: 15,
-    bio: "With over 15 years of experience in Vedic astrology, I provide accurate readings and guidance for your life path.",
-    rating: 4.9,
-    reviewCount: 128,
-    hourlyRate: 1200,
-    availability: {
-      monday: ["10:00-13:00", "15:00-18:00"],
-      tuesday: ["10:00-13:00", "15:00-18:00"],
-      wednesday: ["10:00-13:00", "15:00-18:00"],
-      thursday: ["10:00-13:00", "15:00-18:00"],
-      friday: ["10:00-13:00", "15:00-18:00"],
-      saturday: ["10:00-13:00"],
-      sunday: [],
-    },
-    image: "/astrologers/astrologer-1.jpg",
-    languages: ["English", "Hindi", "Sanskrit"],
-  },
-  {
-    id: "2",
-    name: "Divya Jyotishi",
-    email: "divya@example.com",
-    specialties: ["Tarot Reading", "Numerology"],
-    experience: 8,
-    bio: "Tarot card expert with a gift for seeing beyond the veil. I help clients find clarity in confusing situations.",
-    rating: 4.7,
-    reviewCount: 93,
-    hourlyRate: 900,
-    availability: {
-      monday: ["09:00-14:00"],
-      tuesday: ["09:00-14:00"],
-      wednesday: ["09:00-14:00"],
-      thursday: ["09:00-14:00"],
-      friday: ["09:00-14:00"],
-      saturday: ["10:00-15:00"],
-      sunday: ["10:00-15:00"],
-    },
-    image: "/astrologers/astrologer-2.jpg",
-    languages: ["English", "Hindi", "Gujarati"],
-  },
-  {
-    id: "3",
-    name: "Pandit Rajesh",
-    email: "rajesh@example.com",
-    specialties: ["Vastu Shastra", "Gemology"],
-    experience: 20,
-    bio: "Master of Vastu Shastra and gemology with decades of experience helping people harmonize their living spaces.",
-    rating: 4.8,
-    reviewCount: 215,
-    hourlyRate: 1500,
-    availability: {
-      monday: ["11:00-17:00"],
-      tuesday: ["11:00-17:00"],
-      wednesday: ["11:00-17:00"],
-      thursday: ["11:00-17:00"],
-      friday: ["11:00-17:00"],
-      saturday: ["11:00-15:00"],
-      sunday: [],
-    },
-    image: "/astrologers/astrologer-3.jpg",
-    languages: ["English", "Hindi", "Tamil"],
-  },
-  {
-    id: "4",
-    name: "Maya Devi",
-    email: "maya@example.com",
-    specialties: ["Sound Healing", "Meditation"],
-    experience: 12,
-    bio: "Certified sound healer and meditation guide. I help clients find inner peace and balance through ancient techniques.",
-    rating: 4.9,
-    reviewCount: 87,
-    hourlyRate: 1100,
-    availability: {
-      monday: ["08:00-12:00", "16:00-20:00"],
-      tuesday: ["08:00-12:00", "16:00-20:00"],
-      wednesday: ["08:00-12:00", "16:00-20:00"],
-      thursday: ["08:00-12:00", "16:00-20:00"],
-      friday: ["08:00-12:00", "16:00-20:00"],
-      saturday: ["09:00-13:00"],
-      sunday: ["09:00-13:00"],
-    },
-    image: "/astrologers/astrologer-4.jpg",
-    languages: ["English", "Hindi", "Bengali"],
-  },
-  {
-    id: "5",
-    name: "Guru Patel",
-    email: "guru@example.com",
-    specialties: ["Rudraksha Consultation", "Puja Rituals"],
-    experience: 25,
-    bio: "Expert in Rudraksha and sacred rituals. I guide clients in selecting the right Rudraksha and performing effective pujas.",
-    rating: 4.8,
-    reviewCount: 176,
-    hourlyRate: 1300,
-    availability: {
-      monday: ["10:00-16:00"],
-      tuesday: ["10:00-16:00"],
-      wednesday: ["10:00-16:00"],
-      thursday: ["10:00-16:00"],
-      friday: ["10:00-16:00"],
-      saturday: ["10:00-14:00"],
-      sunday: ["10:00-14:00"],
-    },
-    image: "/astrologers/astrologer-5.jpg",
-    languages: ["English", "Hindi", "Gujarati"],
-  },
-]
-
-export async function GET(request) {
+export async function GET() {
   try {
-    // Get query parameters
-    const { searchParams } = new URL(request.url)
-    const specialty = searchParams.get("specialty")
-    const minRating = searchParams.get("minRating")
+    // Mock astrologer data
+    const astrologers = [
+      {
+        id: 1,
+        name: "Acharya Rajesh Sharma",
+        image: "/placeholder.svg?height=80&width=80",
+        rating: 4.8,
+        reviewCount: 1247,
+        experience: 15,
+        specialties: ["Vedic Astrology", "Marriage Compatibility", "Career Guidance"],
+        languages: ["Hindi", "English", "Sanskrit"],
+        hourlyRate: 1200,
+        isOnline: true,
+        isVerified: true,
+        bio: "Expert in Vedic astrology with 15+ years of experience. Specializes in marriage compatibility, career guidance, and spiritual counseling. Helped thousands find their life path.",
+        achievements: [
+          { title: "Certified Vedic Astrologer", year: 2008 },
+          { title: "Jyotish Acharya", year: 2010 },
+        ],
+      },
+      {
+        id: 2,
+        name: "Dr. Priya Gupta",
+        image: "/placeholder.svg?height=80&width=80",
+        rating: 4.9,
+        reviewCount: 892,
+        experience: 12,
+        specialties: ["Tarot Reading", "Numerology", "Crystal Healing"],
+        languages: ["Hindi", "English"],
+        hourlyRate: 1000,
+        isOnline: true,
+        isVerified: true,
+        bio: "PhD in Psychology with expertise in Tarot and Numerology. Combines modern psychology with ancient wisdom to provide holistic guidance for personal growth.",
+        achievements: [
+          { title: "PhD Psychology", year: 2015 },
+          { title: "Certified Tarot Reader", year: 2012 },
+        ],
+      },
+      {
+        id: 3,
+        name: "Pandit Suresh Kumar",
+        image: "/placeholder.svg?height=80&width=80",
+        rating: 4.7,
+        reviewCount: 1456,
+        experience: 20,
+        specialties: ["Puja Rituals", "Gemology", "Vastu Shastra"],
+        languages: ["Hindi", "Sanskrit", "Bengali"],
+        hourlyRate: 1500,
+        isOnline: false,
+        isVerified: true,
+        bio: "Traditional Pandit with 20 years of experience in Puja rituals, Gemstone consultation, and Vastu Shastra. Helps families with spiritual ceremonies and home harmony.",
+        achievements: [
+          { title: "Vastu Expert", year: 2005 },
+          { title: "Gemology Certified", year: 2008 },
+        ],
+      },
+      {
+        id: 4,
+        name: "Guru Anita Devi",
+        image: "/placeholder.svg?height=80&width=80",
+        rating: 4.6,
+        reviewCount: 734,
+        experience: 18,
+        specialties: ["Sound Healing", "Meditation", "Chakra Balancing"],
+        languages: ["Hindi", "English", "Punjabi"],
+        hourlyRate: 1100,
+        isOnline: true,
+        isVerified: true,
+        bio: "Spiritual healer specializing in sound therapy and meditation. Uses ancient techniques to help clients achieve inner peace and spiritual awakening.",
+        achievements: [
+          { title: "Sound Healing Master", year: 2010 },
+          { title: "Meditation Teacher", year: 2008 },
+        ],
+      },
+      {
+        id: 5,
+        name: "Jyotish Arun Mishra",
+        image: "/placeholder.svg?height=80&width=80",
+        rating: 4.8,
+        reviewCount: 1123,
+        experience: 25,
+        specialties: ["Vedic Astrology", "Horoscope Matching", "Remedial Measures"],
+        languages: ["Hindi", "English", "Sanskrit"],
+        hourlyRate: 1600,
+        isOnline: true,
+        isVerified: true,
+        bio: "Senior Jyotish with 25 years of experience in Vedic astrology. Expert in horoscope matching for marriages and providing effective remedial measures for life problems.",
+        achievements: [
+          { title: "Jyotish Ratna", year: 2005 },
+          { title: "Vedic Scholar", year: 2000 },
+        ],
+      },
+      {
+        id: 6,
+        name: "Swami Vikash Bharti",
+        image: "/placeholder.svg?height=80&width=80",
+        rating: 4.9,
+        reviewCount: 567,
+        experience: 22,
+        specialties: ["Spiritual Counseling", "Past Life Regression", "Karma Healing"],
+        languages: ["Hindi", "English"],
+        hourlyRate: 1800,
+        isOnline: false,
+        isVerified: true,
+        bio: "Spiritual master and counselor with deep knowledge of karma and past life healing. Helps souls understand their spiritual journey and overcome karmic obstacles.",
+        achievements: [
+          { title: "Spiritual Master", year: 2002 },
+          { title: "Past Life Therapist", year: 2008 },
+        ],
+      },
+      {
+        id: 7,
+        name: "Astrologer Meera Joshi",
+        image: "/placeholder.svg?height=80&width=80",
+        rating: 4.5,
+        reviewCount: 445,
+        experience: 8,
+        specialties: ["Career Astrology", "Business Consultation", "Financial Planning"],
+        languages: ["Hindi", "English", "Marathi"],
+        hourlyRate: 900,
+        isOnline: true,
+        isVerified: true,
+        bio: "Young and dynamic astrologer specializing in career and business astrology. Helps professionals and entrepreneurs make informed decisions using astrological insights.",
+        achievements: [
+          { title: "Business Astrology Expert", year: 2018 },
+          { title: "Career Counselor", year: 2020 },
+        ],
+      },
+      {
+        id: 8,
+        name: "Pandit Ramesh Tiwari",
+        image: "/placeholder.svg?height=80&width=80",
+        rating: 4.7,
+        reviewCount: 1789,
+        experience: 30,
+        specialties: ["Yagya Rituals", "Vedic Ceremonies", "Spiritual Healing"],
+        languages: ["Hindi", "Sanskrit"],
+        hourlyRate: 2000,
+        isOnline: false,
+        isVerified: true,
+        bio: "Senior Pandit with 30 years of experience in conducting Yagya and Vedic ceremonies. Expert in spiritual healing through ancient Vedic practices and mantras.",
+        achievements: [
+          { title: "Yagya Acharya", year: 1995 },
+          { title: "Vedic Ritual Expert", year: 1998 },
+        ],
+      },
+      {
+        id: 9,
+        name: "Dr. Kavita Sharma",
+        image: "/placeholder.svg?height=80&width=80",
+        rating: 4.6,
+        reviewCount: 623,
+        experience: 14,
+        specialties: ["Medical Astrology", "Health Predictions", "Ayurvedic Consultation"],
+        languages: ["Hindi", "English"],
+        hourlyRate: 1300,
+        isOnline: true,
+        isVerified: true,
+        bio: "Medical astrologer with background in Ayurveda. Specializes in health predictions and provides guidance on maintaining physical and mental well-being through astrological remedies.",
+        achievements: [
+          { title: "Medical Astrology Expert", year: 2012 },
+          { title: "Ayurvedic Practitioner", year: 2010 },
+        ],
+      },
+      {
+        id: 10,
+        name: "Guru Deepak Pandey",
+        image: "/placeholder.svg?height=80&width=80",
+        rating: 4.8,
+        reviewCount: 956,
+        experience: 16,
+        specialties: ["Love & Relationships", "Marriage Problems", "Family Harmony"],
+        languages: ["Hindi", "English", "Gujarati"],
+        hourlyRate: 1100,
+        isOnline: true,
+        isVerified: true,
+        bio: "Relationship counselor and astrologer specializing in love, marriage, and family issues. Helps couples resolve conflicts and build stronger relationships through astrological guidance.",
+        achievements: [
+          { title: "Relationship Counselor", year: 2010 },
+          { title: "Family Astrologer", year: 2012 },
+        ],
+      },
+      {
+        id: 11,
+        name: "Acharya Sunita Rani",
+        image: "/placeholder.svg?height=80&width=80",
+        rating: 4.7,
+        reviewCount: 789,
+        experience: 11,
+        specialties: ["Women's Issues", "Child Astrology", "Education Guidance"],
+        languages: ["Hindi", "English", "Punjabi"],
+        hourlyRate: 950,
+        isOnline: true,
+        isVerified: true,
+        bio: "Female astrologer specializing in women's issues and child astrology. Provides guidance on education, career choices for children, and women's empowerment through astrological insights.",
+        achievements: [
+          { title: "Child Astrology Expert", year: 2015 },
+          { title: "Women's Counselor", year: 2013 },
+        ],
+      },
+      {
+        id: 12,
+        name: "Jyotish Manoj Pathak",
+        image: "/placeholder.svg?height=80&width=80",
+        rating: 4.9,
+        reviewCount: 2456,
+        experience: 28,
+        specialties: ["Kundli Matching", "Mangal Dosha", "Wedding Astrology"],
+        languages: ["Hindi", "Sanskrit"],
+        hourlyRate: 1700,
+        isOnline: false,
+        isVerified: true,
+        bio: "Expert in Kundli matching and wedding astrology with 28 years of experience. Specializes in Mangal Dosha analysis and provides comprehensive marriage compatibility reports.",
+        achievements: [
+          { title: "Marriage Astrology Expert", year: 1998 },
+          { title: "Kundli Matching Specialist", year: 2000 },
+        ],
+      },
+    ]
 
-    let astrologers = mockAstrologers
-
-    const filters = {}
-    if (specialty) filters.specialty = specialty
-    if (minRating) filters.minRating = minRating
-
-    if (Object.keys(filters).length > 0) {
-      astrologers = astrologers.filter((astrologer) => {
-        let isValid = true
-        if (filters.specialty) {
-          isValid =
-            isValid && astrologer.specialties.some((s) => s.toLowerCase().includes(filters.specialty.toLowerCase()))
-        }
-        if (filters.minRating) {
-          isValid = isValid && astrologer.rating >= Number.parseFloat(filters.minRating)
-        }
-        return isValid
-      })
-    } else {
-      astrologers = await getAllAstrologers(filters)
-    }
-
-    // Transform data for frontend
-    const transformedAstrologers = astrologers.map((astrologer) => ({
-      id: astrologer.id.toString(),
-      name: astrologer.name,
-      email: astrologer.email,
-      specialties: astrologer.specialties || [],
-      experience: astrologer.experience || 0,
-      bio: astrologer.bio || "",
-      rating: astrologer.rating || 0,
-      reviewCount: astrologer.reviewCount || 0,
-      hourlyRate: astrologer.hourlyRate || 1000,
-      availability: astrologer.availability || {},
-      image: astrologer.image || "/placeholder.svg",
-      languages: astrologer.languages || ["English", "Hindi"],
-    }))
-
-    return NextResponse.json(transformedAstrologers)
+    return NextResponse.json(astrologers)
   } catch (error) {
-    console.error("Error fetching astrologers:", error)
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 })
+    console.error("Error in astrologers API:", error)
+    return NextResponse.json({ error: "Failed to fetch astrologers" }, { status: 500 })
   }
 }
