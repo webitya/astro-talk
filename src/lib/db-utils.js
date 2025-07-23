@@ -1,5 +1,11 @@
+// src/lib/db-utils.js
 // Mock database utilities for development
 // In production, these would connect to your actual database
+
+// Always ensure the return type is an array when map() is expected
+function ensureArray(data) {
+  return Array.isArray(data) ? data : [];
+}
 
 export async function getRecentActivity() {
   // Mock recent activity data
@@ -39,9 +45,9 @@ export async function getRecentActivity() {
       description: "Amit Patel joined the platform",
       timestamp: new Date(Date.now() - 60 * 60 * 1000).toISOString(), // 1 hour ago
     },
-  ]
+  ];
 
-  return recentActivity
+  return ensureArray(recentActivity);
 }
 
 export async function getAdminStats() {
@@ -55,12 +61,12 @@ export async function getAdminStats() {
     pendingBookings: 12,
     completedSessions: 756,
     averageRating: 4.6,
-  }
+  };
 }
 
 export async function getDashboardData(userId) {
   // Mock dashboard data
-  return {
+  const dashboardData = {
     walletBalance: 2500,
     totalBookings: 8,
     activeSessions: 2,
@@ -97,5 +103,24 @@ export async function getDashboardData(userId) {
         timestamp: "2024-01-12T15:00:00Z",
       },
     ],
-  }
+  };
+
+  // Convert properties to arrays if they are expected to be mapped
+  dashboardData.recentBookings = ensureArray(dashboardData.recentBookings);
+  dashboardData.chatHistory = ensureArray(dashboardData.chatHistory);
+
+  return dashboardData;
 }
+
+// Placeholder exports to avoid "not exported" errors during build
+export async function getAllAstrologers() { return []; }
+export async function getUserBookings() { return []; }
+export async function getAstrologerBookings() { return []; }
+export async function createBooking() { return { success: true }; }
+export async function getUserChats() { return []; }
+export async function createChat() { return { success: true }; }
+export async function createContactSubmission() { return { success: true }; }
+export async function getUserWallet() { return { balance: 0 }; }
+export async function updateWalletBalance() { return { success: true }; }
+export async function findUserByEmail() { return null; }
+export async function createUser() { return { success: true }; }
