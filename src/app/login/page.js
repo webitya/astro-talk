@@ -2,28 +2,22 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Visibility, VisibilityOff, Email, Lock, Google, Facebook, Star, AutoAwesome } from "@mui/icons-material"
+import { useAuth } from "@/hooks/use-auth"
+import { Eye, EyeOff, Mail, Lock, ChromeIcon as Google, Facebook } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    rememberMe: false,
   })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const { login } = useAuth()
   const router = useRouter()
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }))
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -31,35 +25,20 @@ export default function LoginPage() {
     setError("")
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        // Store token and redirect
-        localStorage.setItem("token", data.token)
-        localStorage.setItem("user", JSON.stringify(data.user))
-
-        // Redirect based on user role
-        if (data.user.role === "admin") {
-          router.push("/admin")
-        } else {
-          router.push("/dashboard")
-        }
-      } else {
-        setError(data.error || "Login failed")
-      }
-    } catch (error) {
-      setError("Network error. Please try again.")
+      await login(formData.email, formData.password)
+      router.push("/dashboard")
+    } catch (err) {
+      setError(err.message || "Login failed. Please try again.")
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    })
   }
 
   const handleSocialLogin = (provider) => {
@@ -69,82 +48,34 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-red-50 flex items-center justify-center p-4">
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-orange-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-64 h-64 bg-red-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-500"></div>
-      </div>
-
-      <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center relative z-10">
-        {/* Left Side - Branding */}
+      <div className="max-w-md w-full">
         <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center lg:text-left"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-2xl shadow-xl overflow-hidden"
         >
-          <div className="mb-8">
-            <div className="flex items-center justify-center lg:justify-start mb-4">
-              <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center mr-4">
-                <Star className="h-8 w-8 text-white" />
-              </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                TalkAstro
-              </h1>
-            </div>
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
-              Welcome Back to Your
-              <span className="block bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                Spiritual Journey
-              </span>
-            </h2>
-            <p className="text-lg text-gray-600 mb-8">
-              Connect with expert astrologers and discover the wisdom of the cosmos. Your path to enlightenment
-              continues here.
-            </p>
+          {/* Header */}
+          <div className="bg-gradient-to-r from-orange-500 to-red-600 px-8 py-6 text-center">
+            <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} transition={{ delay: 0.2, duration: 0.3 }}>
+              <Image
+                src="/placeholder.svg?height=60&width=60&text=🕉️"
+                alt="TalkAstro Logo"
+                width={60}
+                height={60}
+                className="mx-auto mb-3 rounded-full bg-white p-2"
+              />
+              <h1 className="text-2xl font-bold text-white mb-1">Welcome Back</h1>
+              <p className="text-orange-100">Sign in to your spiritual journey</p>
+            </motion.div>
           </div>
 
-          {/* Features */}
-          <div className="hidden lg:block space-y-4">
-            {[
-              { icon: <AutoAwesome className="h-5 w-5" />, text: "Expert Astrologers Available 24/7" },
-              { icon: <Star className="h-5 w-5" />, text: "Personalized Readings & Guidance" },
-              { icon: <AutoAwesome className="h-5 w-5" />, text: "Ancient Wisdom, Modern Convenience" },
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 + index * 0.2, duration: 0.5 }}
-                className="flex items-center text-gray-700"
-              >
-                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3 text-orange-600">
-                  {feature.icon}
-                </div>
-                <span>{feature.text}</span>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Right Side - Login Form */}
-        <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="w-full max-w-md mx-auto"
-        >
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-8">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">Sign In</h3>
-              <p className="text-gray-600">Enter your credentials to access your account</p>
-            </div>
-
+          {/* Form */}
+          <div className="px-8 py-6">
             {error && (
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
                 className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6"
               >
                 {error}
@@ -153,12 +84,12 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Email Field */}
-              <div>
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Email className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <input
                     type="email"
                     id="email"
@@ -170,15 +101,15 @@ export default function LoginPage() {
                     placeholder="Enter your email"
                   />
                 </div>
-              </div>
+              </motion.div>
 
               {/* Password Field */}
-              <div>
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <input
                     type={showPassword ? "text" : "password"}
                     id="password"
@@ -194,39 +125,39 @@ export default function LoginPage() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
-                    {showPassword ? <VisibilityOff className="h-5 w-5" /> : <Visibility className="h-5 w-5" />}
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="flex items-center justify-between"
+              >
                 <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="rememberMe"
-                    checked={formData.rememberMe}
-                    onChange={handleChange}
-                    className="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
-                  />
+                  <input type="checkbox" className="rounded border-gray-300 text-orange-600 focus:ring-orange-500" />
                   <span className="ml-2 text-sm text-gray-600">Remember me</span>
                 </label>
-                <Link href="/forgot-password" className="text-sm text-orange-600 hover:text-orange-800 font-medium">
+                <Link href="/forgot-password" className="text-sm text-orange-600 hover:text-orange-800">
                   Forgot password?
                 </Link>
-              </div>
+              </motion.div>
 
               {/* Submit Button */}
               <motion.button
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
                 type="submit"
                 disabled={loading}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-[1.02]"
               >
                 {loading ? (
                   <div className="flex items-center justify-center">
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                     Signing In...
                   </div>
                 ) : (
@@ -236,40 +167,74 @@ export default function LoginPage() {
             </form>
 
             {/* Divider */}
-            <div className="my-6 flex items-center">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+              className="my-6 flex items-center"
+            >
               <div className="flex-1 border-t border-gray-300"></div>
               <span className="px-4 text-sm text-gray-500">Or continue with</span>
               <div className="flex-1 border-t border-gray-300"></div>
-            </div>
+            </motion.div>
 
             {/* Social Login */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="grid grid-cols-2 gap-3"
+            >
               <button
                 onClick={() => handleSocialLogin("google")}
                 className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                <Google className="h-5 w-5 mr-2" />
+                <Google className="h-5 w-5 text-red-500 mr-2" />
                 <span className="text-sm font-medium">Google</span>
               </button>
               <button
                 onClick={() => handleSocialLogin("facebook")}
                 className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                <Facebook className="h-5 w-5 mr-2 text-blue-600" />
+                <Facebook className="h-5 w-5 text-blue-600 mr-2" />
                 <span className="text-sm font-medium">Facebook</span>
               </button>
-            </div>
+            </motion.div>
 
             {/* Sign Up Link */}
-            <div className="text-center">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.9 }}
+              className="mt-6 text-center"
+            >
               <p className="text-sm text-gray-600">
-                Do not have an account?{" "}
+                Don t have an account?{" "}
                 <Link href="/signup" className="text-orange-600 hover:text-orange-800 font-medium">
                   Sign up here
                 </Link>
               </p>
-            </div>
+            </motion.div>
           </div>
+        </motion.div>
+
+        {/* Additional Info */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+          className="mt-6 text-center"
+        >
+          <p className="text-sm text-gray-500">
+            By signing in, you agree to our{" "}
+            <Link href="/terms" className="text-orange-600 hover:underline">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy" className="text-orange-600 hover:underline">
+              Privacy Policy
+            </Link>
+          </p>
         </motion.div>
       </div>
     </div>
