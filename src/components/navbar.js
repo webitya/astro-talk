@@ -4,22 +4,17 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, Close, Person, Login, ExpandMore } from "@mui/icons-material"
+import { Menu, Close, Person } from "@mui/icons-material"
 import { useAuth } from "@/hooks/use-auth"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [servicesOpen, setServicesOpen] = useState(false)
   const { user, logout } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setScrolled(true)
-      } else {
-        setScrolled(false)
-      }
+      setScrolled(window.scrollY > 10)
     }
 
     window.addEventListener("scroll", handleScroll)
@@ -30,7 +25,7 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Astrologers", href: "/astrologers" },
+    { name: "Astrologers", href: "/astro" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ]
@@ -79,39 +74,21 @@ export default function Navbar() {
             ))}
 
             {/* Services Dropdown */}
-            <div className="relative">
-              <button
-                onMouseEnter={() => setServicesOpen(true)}
-                onMouseLeave={() => setServicesOpen(false)}
-                className="flex items-center text-foreground hover:text-orange-500 transition-colors font-medium"
-              >
+            <div className="relative group">
+              <button className="flex items-center text-foreground hover:text-orange-500 transition-colors font-medium">
                 Services
-                <ExpandMore className="ml-1 h-4 w-4" />
               </button>
-
-              <AnimatePresence>
-                {servicesOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ duration: 0.2 }}
-                    onMouseEnter={() => setServicesOpen(true)}
-                    onMouseLeave={() => setServicesOpen(false)}
-                    className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-md rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+              <div className="absolute hidden group-hover:block mt-2 w-64 bg-white/95 backdrop-blur-md rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                {services.map((service) => (
+                  <Link
+                    key={service.name}
+                    href={service.href}
+                    className="block px-4 py-2 text-sm text-foreground hover:bg-orange-50 hover:text-orange-500 transition-colors"
                   >
-                    {services.map((service) => (
-                      <Link
-                        key={service.name}
-                        href={service.href}
-                        className="block px-4 py-2 text-sm text-foreground hover:bg-orange-50 hover:text-orange-500 transition-colors"
-                      >
-                        {service.name}
-                      </Link>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    {service.name}
+                  </Link>
+                ))}
+              </div>
             </div>
           </nav>
 
@@ -126,6 +103,14 @@ export default function Navbar() {
                   <Person className="mr-1 h-4 w-4" />
                   Dashboard
                 </Link>
+                {user.isAdmin && (
+                  <Link
+                    href="/adminpanel"
+                    className="text-sm font-medium text-foreground hover:text-orange-500 transition-colors"
+                  >
+                    Admin Panel
+                  </Link>
+                )}
                 <button
                   onClick={logout}
                   className="px-4 py-2 rounded-lg bg-gray-100 text-foreground hover:bg-gray-200 transition-colors text-sm font-medium"
@@ -134,21 +119,12 @@ export default function Navbar() {
                 </button>
               </>
             ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="flex items-center text-sm font-medium text-foreground hover:text-orange-500 transition-colors"
-                >
-                  <Login className="mr-1 h-4 w-4" />
-                  Login
-                </Link>
-                <Link
-                  href="/signup"
-                  className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-300 transform hover:scale-105 shadow-lg text-sm font-medium"
-                >
-                  Sign Up
-                </Link>
-              </>
+              <Link
+                href="/Signin"
+                className="text-sm font-medium text-foreground hover:text-orange-500 transition-colors"
+              >
+                Sign In
+              </Link>
             )}
           </div>
 
@@ -182,7 +158,7 @@ export default function Navbar() {
                   </Link>
                 ))}
 
-                {/* Mobile Services */}
+                {/* Services */}
                 <div className="py-2">
                   <p className="font-medium text-foreground mb-2">Services</p>
                   <div className="pl-4 space-y-2">
@@ -199,47 +175,47 @@ export default function Navbar() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-gray-200">
-                  {user ? (
-                    <>
+                {/* Auth Actions - Mobile */}
+                {user ? (
+                  <div className="pt-4 border-t border-gray-200">
+                    <Link
+                      href="/dashboard"
+                      className="flex items-center text-foreground hover:text-orange-500 transition-colors py-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Person className="mr-2 h-5 w-5" />
+                      Dashboard
+                    </Link>
+                    {user.isAdmin && (
                       <Link
-                        href="/dashboard"
+                        href="/adminpanel"
                         className="flex items-center text-foreground hover:text-orange-500 transition-colors py-2"
                         onClick={() => setIsOpen(false)}
                       >
-                        <Person className="mr-2 h-5 w-5" />
-                        Dashboard
+                        Admin Panel
                       </Link>
-                      <button
-                        onClick={() => {
-                          logout()
-                          setIsOpen(false)
-                        }}
-                        className="flex items-center text-foreground hover:text-orange-500 transition-colors py-2 w-full text-left"
-                      >
-                        Logout
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <Link
-                        href="/login"
-                        className="flex items-center text-foreground hover:text-orange-500 transition-colors py-2"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <Login className="mr-2 h-5 w-5" />
-                        Login
-                      </Link>
-                      <Link
-                        href="/signup"
-                        className="flex items-center text-foreground hover:text-orange-500 transition-colors py-2"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        Sign Up
-                      </Link>
-                    </>
-                  )}
-                </div>
+                    )}
+                    <button
+                      onClick={() => {
+                        logout()
+                        setIsOpen(false)
+                      }}
+                      className="flex items-center text-foreground hover:text-orange-500 transition-colors py-2 w-full text-left"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <div className="pt-4 border-t border-gray-200">
+                    <Link
+                      href="/Signin"
+                      className="text-foreground hover:text-orange-500 transition-colors py-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Sign In
+                    </Link>
+                  </div>
+                )}
               </nav>
             </div>
           </motion.div>
@@ -248,3 +224,4 @@ export default function Navbar() {
     </header>
   )
 }
+
